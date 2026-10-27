@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SST — Seguridad y Salud en el Trabajo | Voccare</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100vw;height:100vh;overflow:hidden;font-family:'Segoe UI',system-ui,sans-serif;background:#0d1b2a}
+
+/* ── SLIDES ── */
+.slide{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0;transition:opacity .45s ease;pointer-events:none;overflow:hidden;padding:60px 32px 80px}
+.slide.active{opacity:1;pointer-events:all}
+
+/* ── PROGRESS BAR ── */
+#progress{position:fixed;top:0;left:0;height:3px;background:rgba(255,255,255,.65);transition:width .4s ease;z-index:200}
+
+/* ── TOP BAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:150;pointer-events:none}
+.slide-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);pointer-events:none}
+.slide-num{font-size:11px;color:rgba(255,255,255,.35);font-family:monospace;pointer-events:none}
+.topbar-btns{display:flex;gap:8px;pointer-events:all}
+.icon-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:5px 10px;cursor:pointer;color:rgba(255,255,255,.8);font-size:13px;backdrop-filter:blur(6px);transition:all .2s;line-height:1}
+.icon-btn:hover{background:rgba(255,255,255,.25);color:#fff}
+
+/* ── NAVIGATION ── */
+.nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:150;display:flex;align-items:center;gap:10px}
+.nbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:50%;width:38px;height:38px;cursor:pointer;color:rgba(255,255,255,.9);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(4px)}
+.nbtn:hover{background:rgba(255,255,255,.3)}
+.nbtn:disabled{opacity:.2;cursor:default}
+.dots{display:flex;gap:4px;flex-wrap:wrap;max-width:260px;justify-content:center;align-items:center}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;border:none;padding:0;transition:all .2s;flex-shrink:0}
+.dot.on{background:#fff;transform:scale(1.6)}
+.ctr-txt{position:fixed;bottom:30px;right:20px;font-size:10px;color:rgba(255,255,255,.3);font-family:monospace;z-index:150}
+
+/* ── LAYOUT HELPERS ── */
+.w{width:100%;max-width:940px}
+.center{text-align:center}
+h1.big{font-size:clamp(2rem,5vw,3.8rem);font-weight:800;line-height:1.1;letter-spacing:-.5px}
+h2.title{font-size:clamp(1.5rem,3.5vw,2.6rem);font-weight:700;line-height:1.2;margin-bottom:1rem}
+h3.sub{font-size:clamp(1rem,2vw,1.35rem);font-weight:400;opacity:.75;margin-bottom:2rem;line-height:1.5}
+p.body{font-size:clamp(.9rem,1.6vw,1.1rem);line-height:1.8;opacity:.9}
+.tag{display:inline-block;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:1.2rem;font-weight:600}
+
+ul.list{list-style:none;padding:0}
+ul.list li{padding:.55rem 0 .55rem 1.6rem;position:relative;font-size:clamp(.85rem,1.5vw,1.05rem);line-height:1.6;opacity:.9}
+ul.list li::before{content:'▸';position:absolute;left:0;opacity:.6}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:700px){.grid2,.grid3,.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+
+.card{background:rgba(255,255,255,.08);border-radius:14px;padding:20px;border:1px solid rgba(255,255,255,.12)}
+.card .ico{font-size:2rem;margin-bottom:8px}
+.card .ct{font-weight:700;margin-bottom:6px;font-size:.95rem}
+.card .cb{font-size:.82rem;opacity:.8;line-height:1.55}
+
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+@media(max-width:640px){.col2{grid-template-columns:1fr}}
+
+.divider{width:60px;height:3px;border-radius:2px;margin:1rem 0}
+.divider.center{margin:1rem auto}
+
+/* ── STEP BOXES ── */
+.step{display:flex;gap:14px;align-items:flex-start;margin-bottom:1rem}
+.step-n{min-width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;flex-shrink:0;margin-top:2px}
+.step-txt{font-size:clamp(.82rem,1.4vw,1rem);line-height:1.6;opacity:.9}
+.step-txt strong{display:block;font-size:.95em;margin-bottom:2px}
+
+/* ── BIG QUOTE ── */
+.quote{font-size:clamp(1rem,2vw,1.25rem);line-height:1.9;font-style:italic;opacity:.9;border-left:4px solid;padding-left:1.5rem;margin:1.5rem 0}
+
+/* ── RISK BADGE ── */
+.risk-icon{font-size:clamp(3rem,8vw,5rem);margin-bottom:.5rem;display:block;text-align:center}
+.risk-def{font-size:clamp(.9rem,1.7vw,1.1rem);line-height:1.8;opacity:.9;margin-bottom:1.5rem}
+
+/* ── INDEX LIST ── */
+.idx{list-style:none;padding:0;columns:2;column-gap:32px}
+.idx li{font-size:clamp(.78rem,1.4vw,.95rem);padding:.35rem 0 .35rem 1.4rem;position:relative;opacity:.85;break-inside:avoid}
+.idx li::before{content:'◦';position:absolute;left:0;opacity:.5}
+.idx .section{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;opacity:.45;margin-top:.8rem;padding-left:0;font-weight:700}
+.idx .section::before{content:none}
+@media(max-width:560px){.idx{columns:1}}
+
+/* ──────────────────────────────
+   SLIDE BACKGROUNDS
+────────────────────────────── */
+
+/* 1 Cover */
+#s1{background:linear-gradient(135deg,#0d1b2a 0%,#1a2d46 50%,#0d1b2a 100%);color:#fff}
+#s1::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,168,130,.15) 0%,transparent 70%);pointer-events:none}
+/* 2 Index */
+#s2{background:linear-gradient(160deg,#0f2035,#1a3a56);color:#fff}
+/* 3 Policy */
+#s3{background:linear-gradient(135deg,#0d2135,#163352);color:#fff}
+/* 4 Goals */
+#s4{background:linear-gradient(135deg,#0a2e20,#0f4230);color:#fff}
+/* 5-6 Strategic */
+#s5,#s6{background:linear-gradient(135deg,#1a2d0f,#253d15);color:#fff}
+/* 7 ISO */
+#s7{background:linear-gradient(135deg,#1a1060,#2a1890);color:#fff}
+/* 8 Policy SST */
+#s8{background:linear-gradient(135deg,#0d2135,#163352);color:#fff}
+/* 9 Intro */
+#s9{background:linear-gradient(135deg,#0d2828,#0f3d3d);color:#fff}
+/* 10 Legal */
+#s10{background:linear-gradient(135deg,#1a1040,#251a60);color:#fff}
+/* 11 Definitions */
+#s11{background:linear-gradient(135deg,#0d2135,#1a3550);color:#fff}
+/* 12 Risk vs Hazard */
+#s12{background:linear-gradient(135deg,#1a0d2e,#2a1040);color:#fff}
+/* 13 Físico */
+#s13{background:linear-gradient(135deg,#1a1200,#2e1f00);color:#fff}
+/* 14 Químico */
+#s14{background:linear-gradient(135deg,#1a0a2e,#2d1050);color:#fff}
+/* 15 Biológico */
+#s15{background:linear-gradient(135deg,#0a1a10,#0f2e18);color:#fff}
+/* 16 Ergonómico */
+#s16{background:linear-gradient(135deg,#0d1f35,#152d50);color:#fff}
+/* 17 Psicosocial */
+#s17{background:linear-gradient(135deg,#1a0d1a,#2a1030);color:#fff}
+/* 18 Fenómenos */
+#s18{background:linear-gradient(135deg,#1a1208,#2e2010);color:#fff}
+/* 19 Riesgo Público */
+#s19{background:linear-gradient(135deg,#1a0808,#2e1010);color:#fff}
+/* 20 Prevención */
+#s20{background:linear-gradient(135deg,#0a2010,#103018);color:#fff}
+/* 21 Pausas Def */
+#s21{background:linear-gradient(135deg,#0d1f35,#152d50);color:#fff}
+/* 22 Pausas Ej */
+#s22{background:linear-gradient(135deg,#0d1f35,#152d50);color:#fff}
+/* 23 Responsabilidades */
+#s23{background:linear-gradient(135deg,#1a1500,#2d2300);color:#fff}
+/* 24 Plan Emergencia */
+#s24{background:linear-gradient(135deg,#1a0808,#2d1010);color:#fff}
+/* 25-26 Crear Plan */
+#s25,#s26{background:linear-gradient(135deg,#180f08,#2a1a0a);color:#fff}
+/* 27 Evacuación */
+#s27{background:linear-gradient(135deg,#0d1b2a,#1a2d46);color:#fff}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <span class="slide-lbl" id="sectionLbl"></span>
+  <div class="topbar-btns">
+    <button class="icon-btn" id="fsBtn" title="Pantalla completa (F)">⛶ Pantalla completa</button>
+  </div>
+  <span class="slide-num" id="slideNum"></span>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 1 — PORTADA
+══════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="w center">
+    <div class="tag" style="background:rgba(0,168,130,.25);color:#4dffd6;border:1px solid rgba(0,168,130,.3)">Voccare · Capacitación Inicial 2026</div>
+    <div style="font-size:clamp(3.5rem,10vw,7rem);margin-bottom:.5rem">🦺</div>
+    <h1 class="big" style="color:#fff">Seguridad y Salud<br><span style="color:#4dffd6">en el Trabajo</span></h1>
+    <div class="divider center" style="background:#4dffd6"></div>
+    <p style="color:rgba(255,255,255,.55);font-size:clamp(.85rem,1.5vw,1.1rem);margin-top:1.5rem">
+      Colombia · México · Guatemala · Argentina
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 2 — ÍNDICE
+══════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="w">
+    <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Contenido</div>
+    <h2 class="title" style="color:#fff">Índice</h2>
+    <ul class="idx" style="color:#fff">
+      <li class="section">Política y objetivos</li>
+      <li>Política Integrada Voccare</li>
+      <li>Objetivos SST 2026</li>
+      <li>Objetivos Estratégicos</li>
+      <li>Implementación ISO 45001</li>
+      <li class="section">Fundamentos SST</li>
+      <li>Introducción a la SST</li>
+      <li>Marco Legal</li>
+      <li>Definiciones clave</li>
+      <li>Riesgo vs. Peligro</li>
+      <li class="section">Riesgos laborales</li>
+      <li>Físicos · Químicos · Biológicos</li>
+      <li>Ergonómicos · Psicosociales</li>
+      <li>Fenómenos Naturales · Riesgo Público</li>
+      <li class="section">Prevención y bienestar</li>
+      <li>Medidas de Prevención</li>
+      <li>Pausas Activas</li>
+      <li>Responsabilidades del Trabajador</li>
+      <li class="section">Emergencias</li>
+      <li>Plan de Emergencias</li>
+      <li>Cómo crear un Plan</li>
+      <li>Rutas de Evacuación</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 3 — POLÍTICA INTEGRADA
+══════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="w">
+    <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Política</div>
+    <h2 class="title" style="color:#fff">Política Integrada <span style="color:#90cdf4">Voccare</span></h2>
+    <blockquote class="quote" style="border-color:#90cdf4;color:#e8f4ff">
+      "Voccare está comprometida con la satisfacción del cliente a través de una gestión comercial rentable y la prestación de un servicio oportuno, confiable, seguro, efectivo, sostenible y ambientalmente amigable."
+    </blockquote>
+    <div class="grid3" style="margin-top:1.5rem">
+      <div class="card">
+        <div class="ico">🔒</div>
+        <div class="ct" style="color:#90cdf4">Información</div>
+        <div class="cb">Confidencialidad, integridad y disponibilidad de activos de información.</div>
+      </div>
+      <div class="card">
+        <div class="ico">🛡️</div>
+        <div class="ct" style="color:#90cdf4">Seguridad</div>
+        <div class="cb">Protección de la seguridad y salud de todos sus trabajadores.</div>
+      </div>
+      <div class="card">
+        <div class="ico">📈</div>
+        <div class="ct" style="color:#90cdf4">Mejora continua</div>
+        <div class="cb">Cumplimiento normativo y mejora continua con recursos adecuados.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 4 — OBJETIVOS SST 2026
+══════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="w">
+    <div class="tag" style="background:rgba(72,199,142,.15);color:#68d391;border:1px solid rgba(72,199,142,.2)">Metas</div>
+    <h2 class="title" style="color:#fff">Objetivos SST <span style="color:#68d391">2026</span></h2>
+    <div class="grid4">
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">🎯</div>
+        <div class="ct" style="color:#68d391">Cero Accidentes</div>
+        <div class="cb">Entornos seguros y saludables. Cultura preventiva reforzada.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">⚖️</div>
+        <div class="ct" style="color:#68d391">Cumplimiento Legal</div>
+        <div class="cb">Auditorías 100% satisfactorias en todos los países.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">🤝</div>
+        <div class="ct" style="color:#68d391">Participación</div>
+        <div class="cb">Comités mixtos activos al 80%. Capacitación efectiva.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">🔄</div>
+        <div class="ct" style="color:#68d391">Mejora Continua</div>
+        <div class="cb">Reducción óptima de incidentes en los procesos.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 5 — OBJETIVOS ESTRATÉGICOS I
+══════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="w">
+    <div class="tag" style="background:rgba(154,230,180,.15);color:#9ae6b4;border:1px solid rgba(154,230,180,.2)">Estrategia</div>
+    <h2 class="title" style="color:#fff">Objetivos Estratégicos <span style="color:#9ae6b4">I</span></h2>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card">
+        <div class="ct" style="color:#9ae6b4">🌎 Cumplimiento Legal Multipaís</div>
+        <div class="cb">Garantizar el cumplimiento del 100% de los requisitos normativos vigentes en SST en cada una de las sedes: Colombia, México, Guatemala y Argentina.</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="color:#9ae6b4">🔍 Gestión Proactiva de Riesgos</div>
+        <div class="cb">Identificar, evaluar y controlar oportunamente los peligros asociados a la operación de logística y atención al cliente, para prevenir accidentes y enfermedades laborales.</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="color:#9ae6b4">❤️ Bienestar y Salud Integral</div>
+        <div class="cb">Implementar programas de vigilancia epidemiológica y promoción de la salud mental y física, adaptados a los diagnósticos de salud de cada sede.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 6 — OBJETIVOS ESTRATÉGICOS II
+══════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="w">
+    <div class="tag" style="background:rgba(154,230,180,.15);color:#9ae6b4;border:1px solid rgba(154,230,180,.2)">Estrategia</div>
+    <h2 class="title" style="color:#fff">Objetivos Estratégicos <span style="color:#9ae6b4">II</span></h2>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card">
+        <div class="ct" style="color:#9ae6b4">🙋 Cultura de Autocuidado y Participación</div>
+        <div class="cb">Fortalecer la cultura preventiva mediante la capacitación continua y el empoderamiento de los colaboradores, fomentando el reporte oportuno de condiciones inseguras y la participación en los comités (COPASST en Colombia, comités bipartitos en Guatemala/México).</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="color:#9ae6b4">🚨 Preparación y Respuesta ante Emergencias</div>
+        <div class="cb">Mantener un nivel óptimo de respuesta ante emergencias en todas las sedes, garantizando que el personal, contratistas y visitantes conozcan y sigan los planes de evacuación y primeros auxilios.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 7 — ISO 45001
+══════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="w center">
+    <div class="tag" style="background:rgba(160,140,255,.15);color:#b794f4;border:1px solid rgba(160,140,255,.2)">Estándar Internacional</div>
+    <div style="font-size:clamp(2.5rem,7vw,5rem);margin-bottom:.5rem">🏆</div>
+    <h2 class="title" style="color:#fff">ISO <span style="color:#b794f4">45001:2018</span></h2>
+    <p class="body" style="color:rgba(255,255,255,.8);max-width:660px;margin:0 auto 2rem">
+      Eje de la Seguridad y Salud en el Trabajo en Voccare. Estandariza los procesos de salud ocupacional mediante la integración de la normatividad local con la excelencia operacional.
+    </p>
+    <div class="grid4" style="max-width:720px;margin:0 auto">
+      <div class="card center"><div class="ico">🔎</div><div class="cb">Identificación de riesgos</div></div>
+      <div class="card center"><div class="ico">📋</div><div class="cb">Cumplimiento legal</div></div>
+      <div class="card center"><div class="ico">👥</div><div class="cb">Consulta y participación</div></div>
+      <div class="card center"><div class="ico">🔄</div><div class="cb">Mejora continua</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 8 — POLÍTICA SST
+══════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="w">
+    <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Compromiso</div>
+    <h2 class="title" style="color:#fff">Política SST: <span style="color:#90cdf4">Compromiso Voccare</span></h2>
+    <p class="body" style="color:rgba(255,255,255,.7);margin-bottom:1.5rem">Excelencia Operacional bajo ISO 45001</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="ico">🛡️</div>
+        <div class="ct" style="color:#90cdf4">Prevención</div>
+        <div class="cb">Entornos seguros y saludables para todos los colaboradores.</div>
+      </div>
+      <div class="card">
+        <div class="ico">⚖️</div>
+        <div class="ct" style="color:#90cdf4">Cumplimiento Legal</div>
+        <div class="cb">Adherencia a la normativa legal vigente en cada país de operación.</div>
+      </div>
+      <div class="card">
+        <div class="ico">💬</div>
+        <div class="ct" style="color:#90cdf4">Consulta y Participación</div>
+        <div class="cb">Canales abiertos, empleados activos en seguridad.</div>
+      </div>
+      <div class="card">
+        <div class="ico">📈</div>
+        <div class="ct" style="color:#90cdf4">Mejora Continua</div>
+        <div class="cb">Evaluación constante y optimización de procesos.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 9 — INTRODUCCIÓN SST
+══════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="w col2">
+    <div>
+      <div class="tag" style="background:rgba(79,209,197,.15);color:#81e6d9;border:1px solid rgba(79,209,197,.2)">Fundamentos</div>
+      <h2 class="title" style="color:#fff">¿Qué es la <span style="color:#81e6d9">SST?</span></h2>
+      <p class="body" style="color:rgba(255,255,255,.85)">
+        Es un conjunto de disciplinas y acciones enfocadas en <strong style="color:#81e6d9">prevenir accidentes laborales y enfermedades ocupacionales</strong>, protegiendo la integridad física, mental y social del trabajador.
+      </p>
+      <p class="body" style="color:rgba(255,255,255,.85);margin-top:1rem">
+        Mediante la identificación y control de riesgos en el entorno laboral se busca mejorar continuamente las condiciones de trabajo y el bienestar general.
+      </p>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px;border-color:rgba(129,230,217,.3)">
+        <div class="ico">📉</div>
+        <div class="ct" style="color:#81e6d9">Reducción de accidentes</div>
+        <div class="cb">Menor ausentismo y menos costos asociados a incidentes.</div>
+      </div>
+      <div class="card" style="margin-bottom:12px;border-color:rgba(129,230,217,.3)">
+        <div class="ico">😊</div>
+        <div class="ct" style="color:#81e6d9">Clima laboral</div>
+        <div class="cb">Mejora del bienestar y la productividad del equipo.</div>
+      </div>
+      <div class="card" style="border-color:rgba(129,230,217,.3)">
+        <div class="ico">✅</div>
+        <div class="ct" style="color:#81e6d9">Cumplimiento legal</div>
+        <div class="cb">Evita sanciones y fortalece la reputación de la empresa.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 10 — MARCO LEGAL
+══════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="w">
+    <div class="tag" style="background:rgba(160,140,255,.15);color:#b794f4;border:1px solid rgba(160,140,255,.2)">Normativa</div>
+    <h2 class="title" style="color:#fff">Marco <span style="color:#b794f4">Legal</span></h2>
+    <div class="grid2">
+      <div class="card" style="border-color:rgba(255,213,79,.2)">
+        <div class="ico">🇨🇴</div>
+        <div class="ct" style="color:#fbd38d">Colombia</div>
+        <div class="cb">
+          <ul class="list">
+            <li>Ley 1562 de 2012</li>
+            <li>Resolución 0312 de 2019</li>
+            <li>Decreto 1072 de 2015</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(255,213,79,.2)">
+        <div class="ico">🇲🇽</div>
+        <div class="ct" style="color:#fbd38d">México</div>
+        <div class="cb">
+          <ul class="list">
+            <li>Arts. 472–515 — Título IX: Riesgos de Trabajo</li>
+            <li>Arts. 512-A–512-D — Seguridad e Higiene</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(255,213,79,.2)">
+        <div class="ico">🇬🇹</div>
+        <div class="ct" style="color:#fbd38d">Guatemala</div>
+        <div class="cb">
+          <ul class="list">
+            <li>Acuerdo Gubernativo 229-2014</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(255,213,79,.2)">
+        <div class="ico">🇦🇷</div>
+        <div class="ct" style="color:#fbd38d">Argentina</div>
+        <div class="cb">
+          <ul class="list">
+            <li>Ley N° 19.587 de Higiene y Seguridad</li>
+            <li>Decreto reglamentario 351/79</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:1rem;font-size:.8rem;color:rgba(255,255,255,.35)">🌐 Normativa Internacional: OIT · ISO 45001</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 11 — DEFINICIONES SST
+══════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="w">
+    <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Conceptos</div>
+    <h2 class="title" style="color:#fff">Definiciones <span style="color:#90cdf4">clave</span></h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="ct" style="color:#90cdf4">Accidente de trabajo</div>
+        <div class="cb">Todo suceso repentino que sobrevenga por causa o con ocasión del trabajo y produzca lesión orgánica, perturbación funcional o muerte.</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="color:#90cdf4">Enfermedad laboral</div>
+        <div class="cb">La contraída como resultado de la exposición a factores de riesgo inherentes a la actividad laboral o del medio en que el trabajador se ve obligado a trabajar.</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="color:#90cdf4">SG-SST</div>
+        <div class="cb">Sistema de Gestión de Seguridad y Salud en el Trabajo. Proceso lógico por etapas que incluye política, planificación, aplicación, evaluación y mejora.</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="color:#90cdf4">EPP</div>
+        <div class="cb">Equipo de Protección Personal. Dispositivos o accesorios diseñados para proteger al trabajador de lesiones o enfermedades causadas por el ambiente laboral.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 12 — RIESGO vs PELIGRO
+══════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="w">
+    <div class="tag" style="background:rgba(183,121,255,.15);color:#d6bcfa;border:1px solid rgba(183,121,255,.2)">Fundamentos</div>
+    <h2 class="title" style="color:#fff">Riesgo <span style="color:rgba(255,255,255,.4)">vs.</span> <span style="color:#d6bcfa">Peligro</span></h2>
+    <div class="col2" style="gap:24px;margin-top:1rem">
+      <div class="card" style="border-color:rgba(251,183,4,.35);background:rgba(251,183,4,.08)">
+        <div style="font-size:2.5rem;margin-bottom:.5rem">⚡</div>
+        <h3 style="color:#fbd38d;font-size:1.3rem;margin-bottom:.6rem">Peligro</h3>
+        <p class="body">Fuente, situación o acto con <strong style="color:#fbd38d">potencial de causar daño</strong>.</p>
+        <p class="body" style="margin-top:.8rem;font-size:.9rem;opacity:.75">Ejemplos: electricidad, trabajar en altura, sustancias químicas, maquinaria en movimiento.</p>
+        <div style="margin-top:1rem;padding:.6rem;background:rgba(251,183,4,.12);border-radius:8px;font-size:.85rem;color:#fbd38d">El peligro se <strong>identifica</strong>.</div>
+      </div>
+      <div class="card" style="border-color:rgba(252,129,74,.35);background:rgba(252,129,74,.08)">
+        <div style="font-size:2.5rem;margin-bottom:.5rem">📊</div>
+        <h3 style="color:#fc8150;font-size:1.3rem;margin-bottom:.6rem">Riesgo</h3>
+        <p class="body">Probabilidad de que el daño ocurra, <strong style="color:#fc8150">combinada con su severidad</strong>.</p>
+        <p class="body" style="margin-top:.8rem;font-size:.9rem;opacity:.75">Depende de la probabilidad de exposición y de la gravedad del daño potencial.</p>
+        <div style="margin-top:1rem;padding:.6rem;background:rgba(252,129,74,.12);border-radius:8px;font-size:.85rem;color:#fc8150">El riesgo se <strong>evalúa y controla</strong>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 13 — RIESGOS FÍSICOS
+══════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="w">
+    <div class="tag" style="background:rgba(251,183,4,.15);color:#f6ad55;border:1px solid rgba(251,183,4,.25)">Riesgos Laborales</div>
+    <div class="col2">
+      <div>
+        <span class="risk-icon" style="text-align:left">🌡️</span>
+        <h2 class="title" style="color:#f6ad55">Riesgos Físicos</h2>
+        <p class="risk-def">Factores del entorno que pueden causar daño con o sin contacto directo. Son los más comunes en ambientes laborales.</p>
+      </div>
+      <div>
+        <ul class="list" style="color:#fff">
+          <li><strong style="color:#f6ad55">Ruido</strong> — Exposición prolongada causa pérdida auditiva</li>
+          <li><strong style="color:#f6ad55">Temperatura extrema</strong> — Calor o frío excesivo</li>
+          <li><strong style="color:#f6ad55">Radiación</strong> — Ionizante (rayos X) o no ionizante (UV)</li>
+          <li><strong style="color:#f6ad55">Vibración</strong> — Uso de maquinaria y herramientas</li>
+          <li><strong style="color:#f6ad55">Iluminación</strong> — Insuficiente o excesiva</li>
+        </ul>
+        <div class="card" style="margin-top:1rem;border-color:rgba(246,173,85,.3)">
+          <div class="cb">💡 <strong style="color:#f6ad55">Prevención:</strong> usar EPP adecuado, medir niveles periódicamente y rotar al personal expuesto.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 14 — RIESGOS QUÍMICOS
+══════════════════════════════ -->
+<div class="slide" id="s14">
+  <div class="w">
+    <div class="tag" style="background:rgba(183,121,255,.15);color:#d6bcfa;border:1px solid rgba(183,121,255,.2)">Riesgos Laborales</div>
+    <div class="col2">
+      <div>
+        <span class="risk-icon" style="text-align:left">⚗️</span>
+        <h2 class="title" style="color:#d6bcfa">Riesgos Químicos</h2>
+        <p class="risk-def">Sustancias sólidas, líquidas o gaseosas que pueden ingresar al organismo por <strong style="color:#d6bcfa">inhalación, ingestión o contacto</strong> y causar daño.</p>
+      </div>
+      <div>
+        <ul class="list" style="color:#fff">
+          <li><strong style="color:#d6bcfa">Irritantes</strong> — Afectan vías respiratorias y piel</li>
+          <li><strong style="color:#d6bcfa">Corrosivos</strong> — Destruyen tejidos (ácidos, bases)</li>
+          <li><strong style="color:#d6bcfa">Tóxicos</strong> — Solventes, plaguicidas, gases</li>
+          <li><strong style="color:#d6bcfa">Cancerígenos</strong> — Exposición crónica a ciertos químicos</li>
+          <li><strong style="color:#d6bcfa">Asfixiantes</strong> — Desplazan el oxígeno del ambiente</li>
+        </ul>
+        <div class="card" style="margin-top:1rem;border-color:rgba(214,188,250,.3)">
+          <div class="cb">💡 <strong style="color:#d6bcfa">Prevención:</strong> leer fichas de seguridad (SDS), usar mascarilla y guantes, almacenar correctamente y ventilar el área.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 15 — RIESGOS BIOLÓGICOS
+══════════════════════════════ -->
+<div class="slide" id="s15">
+  <div class="w">
+    <div class="tag" style="background:rgba(72,199,142,.15);color:#68d391;border:1px solid rgba(72,199,142,.2)">Riesgos Laborales</div>
+    <div class="col2">
+      <div>
+        <span class="risk-icon" style="text-align:left">🦠</span>
+        <h2 class="title" style="color:#68d391">Riesgos Biológicos</h2>
+        <p class="risk-def">Exposición laboral a micro y macroorganismos que puedan causar daños al trabajador, transmitidos por aire, sangre o fluidos corporales.</p>
+      </div>
+      <div>
+        <ul class="list" style="color:#fff">
+          <li><strong style="color:#68d391">Bacterias</strong> — Tuberculosis, legionela</li>
+          <li><strong style="color:#68d391">Virus</strong> — Hepatitis, influenza, COVID-19</li>
+          <li><strong style="color:#68d391">Hongos</strong> — Afecciones respiratorias y dérmicas</li>
+          <li><strong style="color:#68d391">Parásitos</strong> — En entornos de saneamiento deficiente</li>
+        </ul>
+        <div class="card" style="margin-top:1rem;border-color:rgba(104,211,145,.3)">
+          <div class="cb">💡 <strong style="color:#68d391">Prevención:</strong> higiene de manos, vacunación, uso de EPP y protocolos de bioseguridad.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 16 — RIESGOS ERGONÓMICOS
+══════════════════════════════ -->
+<div class="slide" id="s16">
+  <div class="w">
+    <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Riesgos Laborales</div>
+    <div class="col2">
+      <div>
+        <span class="risk-icon" style="text-align:left">🪑</span>
+        <h2 class="title" style="color:#90cdf4">Riesgos Ergonómicos</h2>
+        <p class="risk-def">Factores del entorno laboral relacionados con las condiciones físicas del trabajo que pueden causar <strong style="color:#90cdf4">lesiones musculoesqueléticas</strong>.</p>
+      </div>
+      <div>
+        <ul class="list" style="color:#fff">
+          <li><strong style="color:#90cdf4">Posturas inadecuadas</strong> — Sedentarismo prolongado</li>
+          <li><strong style="color:#90cdf4">Movimientos repetitivos</strong> — Microtraumatismos acumulados</li>
+          <li><strong style="color:#90cdf4">Carga física excesiva</strong> — Levantamiento manual</li>
+          <li><strong style="color:#90cdf4">Diseño deficiente</strong> — Puesto de trabajo mal adaptado</li>
+        </ul>
+        <div class="card" style="margin-top:.8rem;border-color:rgba(144,205,244,.3)">
+          <div class="cb">⚠️ <strong style="color:#90cdf4">Consecuencias:</strong> tendinitis, lumbalgia, síndrome del túnel carpiano.</div>
+        </div>
+        <div class="card" style="margin-top:.6rem;border-color:rgba(144,205,244,.3)">
+          <div class="cb">💡 <strong style="color:#90cdf4">Prevención:</strong> ajustar el puesto de trabajo, hacer pausas activas y seguir técnicas de carga segura.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 17 — RIESGOS PSICOSOCIALES
+══════════════════════════════ -->
+<div class="slide" id="s17">
+  <div class="w">
+    <div class="tag" style="background:rgba(237,100,166,.15);color:#f687b3;border:1px solid rgba(237,100,166,.2)">Riesgos Laborales</div>
+    <div class="col2">
+      <div>
+        <span class="risk-icon" style="text-align:left">🧠</span>
+        <h2 class="title" style="color:#f687b3">Riesgos Psicosociales</h2>
+        <p class="risk-def">Factores que pueden afectar la <strong style="color:#f687b3">salud mental y emocional</strong> de las personas en el trabajo.</p>
+      </div>
+      <div>
+        <ul class="list" style="color:#fff">
+          <li><strong style="color:#f687b3">Estrés laboral</strong> — Exigencias que superan los recursos</li>
+          <li><strong style="color:#f687b3">Acoso o mobbing</strong> — Hostigamiento sistemático</li>
+          <li><strong style="color:#f687b3">Sobrecarga de trabajo</strong> — Jornadas excesivas</li>
+          <li><strong style="color:#f687b3">Falta de autonomía</strong> — Sin control sobre las tareas</li>
+          <li><strong style="color:#f687b3">Conflictos interpersonales</strong> — Clima laboral deteriorado</li>
+        </ul>
+        <div class="card" style="margin-top:1rem;border-color:rgba(246,135,179,.3)">
+          <div class="cb">💡 <strong style="color:#f687b3">Prevención:</strong> comunicación abierta, canales de denuncia, programas de bienestar y apoyo psicológico.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 18 — FENÓMENOS NATURALES
+══════════════════════════════ -->
+<div class="slide" id="s18">
+  <div class="w">
+    <div class="tag" style="background:rgba(237,160,52,.15);color:#f6c05a;border:1px solid rgba(237,160,52,.2)">Riesgos Laborales</div>
+    <div class="col2">
+      <div>
+        <span class="risk-icon" style="text-align:left">🌋</span>
+        <h2 class="title" style="color:#f6c05a">Fenómenos Naturales</h2>
+        <p class="risk-def">Producidos por la naturaleza, pueden ocasionar daños físicos y estructurales en el lugar de trabajo.</p>
+      </div>
+      <div>
+        <ul class="list" style="color:#fff">
+          <li><strong style="color:#f6c05a">Sismos y terremotos</strong> — Zonas de alta actividad sísmica</li>
+          <li><strong style="color:#f6c05a">Tormentas eléctricas</strong> — Riesgo de rayo y apagones</li>
+          <li><strong style="color:#f6c05a">Inundaciones</strong> — Infraestructura en zonas de riesgo hídrico</li>
+          <li><strong style="color:#f6c05a">Erupciones volcánicas</strong> — Afectación de calidad del aire</li>
+          <li><strong style="color:#f6c05a">Deslizamientos</strong> — Zonas montañosas</li>
+        </ul>
+        <div class="card" style="margin-top:1rem;border-color:rgba(246,192,90,.3)">
+          <div class="cb">💡 <strong style="color:#f6c05a">Prevención:</strong> conocer el plan de emergencias, identificar rutas de evacuación y practicar simulacros.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 19 — RIESGO PÚBLICO
+══════════════════════════════ -->
+<div class="slide" id="s19">
+  <div class="w">
+    <div class="tag" style="background:rgba(252,129,74,.15);color:#fc8150;border:1px solid rgba(252,129,74,.2)">Riesgos Laborales</div>
+    <div class="col2">
+      <div>
+        <span class="risk-icon" style="text-align:left">🚨</span>
+        <h2 class="title" style="color:#fc8150">Riesgo Público</h2>
+        <p class="risk-def">Situaciones de <strong style="color:#fc8150">agresión intencional, delincuencia o alteración del orden</strong> que amenazan la integridad física, emocional y patrimonial.</p>
+      </div>
+      <div>
+        <ul class="list" style="color:#fff">
+          <li>Hurtos y atracos en vía pública</li>
+          <li>Extorsiones y amenazas</li>
+          <li>Secuestros</li>
+          <li>Asonadas y alteración del orden público</li>
+          <li>Accidentes de tránsito durante la jornada</li>
+        </ul>
+        <div class="card" style="margin-top:1rem;border-color:rgba(252,129,74,.3)">
+          <div class="cb">💡 <strong style="color:#fc8150">Prevención:</strong> evitar zonas de alto riesgo, no exhibir objetos de valor, reportar amenazas y activar el protocolo de seguridad.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 20 — MEDIDAS DE PREVENCIÓN
+══════════════════════════════ -->
+<div class="slide" id="s20">
+  <div class="w">
+    <div class="tag" style="background:rgba(72,199,142,.15);color:#68d391;border:1px solid rgba(72,199,142,.2)">Prevención</div>
+    <h2 class="title" style="color:#fff">Medidas de <span style="color:#68d391">Prevención</span></h2>
+    <div class="grid3" style="margin-top:.5rem">
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">🔎</div>
+        <div class="ct" style="color:#68d391">Identifica los riesgos</div>
+        <div class="cb">Observa el entorno y las actividades que realizas día a día.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">🦺</div>
+        <div class="ct" style="color:#68d391">Usa EPP</div>
+        <div class="cb">Equipos de Protección Personal adecuados para cada tarea.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">📚</div>
+        <div class="ct" style="color:#68d391">Capacitación</div>
+        <div class="cb">Entrenar a todos los colaboradores en seguridad permanentemente.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">🧹</div>
+        <div class="ct" style="color:#68d391">Mantén el orden</div>
+        <div class="cb">Elimina obstáculos y desorden que puedan causar accidentes.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">🔧</div>
+        <div class="ct" style="color:#68d391">Revisa equipos</div>
+        <div class="cb">Mantén herramientas y equipos en buen estado antes de usarlos.</div>
+      </div>
+      <div class="card" style="border-color:rgba(104,211,145,.3)">
+        <div class="ico">📢</div>
+        <div class="ct" style="color:#68d391">Reporta</div>
+        <div class="cb">Comunica condiciones inseguras antes de que se conviertan en accidente.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 21 — PAUSAS ACTIVAS DEF
+══════════════════════════════ -->
+<div class="slide" id="s21">
+  <div class="w col2">
+    <div>
+      <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Bienestar</div>
+      <h2 class="title" style="color:#fff">Pausas <span style="color:#90cdf4">Activas</span></h2>
+      <p class="body" style="color:rgba(255,255,255,.85);margin-bottom:1rem">
+        Breves descansos de <strong style="color:#90cdf4">5 a 15 minutos</strong> durante la jornada laboral, que consisten en sesiones de actividad física orientadas a la movilidad articular, el estiramiento y la activación muscular.
+      </p>
+      <blockquote class="quote" style="border-color:#90cdf4;font-size:clamp(.85rem,1.5vw,1rem)">
+        "Su propósito es prevenir lesiones, reducir la fatiga y mejorar la productividad."
+      </blockquote>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px;border-color:rgba(144,205,244,.3)">
+        <div class="ico">🏃</div>
+        <div class="ct" style="color:#90cdf4">Beneficio físico</div>
+        <div class="cb">Reduce la tensión muscular y previene lesiones musculoesqueléticas.</div>
+      </div>
+      <div class="card" style="margin-bottom:12px;border-color:rgba(144,205,244,.3)">
+        <div class="ico">🧘</div>
+        <div class="ct" style="color:#90cdf4">Beneficio mental</div>
+        <div class="cb">Disminuye el estrés y mejora la concentración.</div>
+      </div>
+      <div class="card" style="border-color:rgba(144,205,244,.3)">
+        <div class="ico">📈</div>
+        <div class="ct" style="color:#90cdf4">Beneficio laboral</div>
+        <div class="cb">Aumenta la productividad y reduce el ausentismo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 22 — PAUSAS ACTIVAS EJ
+══════════════════════════════ -->
+<div class="slide" id="s22">
+  <div class="w">
+    <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Bienestar</div>
+    <h2 class="title" style="color:#fff">Pausas Activas — <span style="color:#90cdf4">Ejercicios</span></h2>
+    <div class="grid2">
+      <div class="card" style="border-color:rgba(144,205,244,.25)">
+        <div class="ico">🦒</div>
+        <div class="ct" style="color:#90cdf4">Cuello</div>
+        <div class="cb">Con la espalda recta, gira suavemente la cabeza hacia la derecha y mantén 5 s; repite hacia la izquierda. Luego inclina la barbilla hacia el pecho.</div>
+      </div>
+      <div class="card" style="border-color:rgba(144,205,244,.25)">
+        <div class="ico">🙆</div>
+        <div class="ct" style="color:#90cdf4">Hombros y espalda</div>
+        <div class="cb">Eleva ambos hombros hacia las orejas, sostén 5 s y relájalos. Entrelaza las manos y estira los brazos al frente y luego hacia arriba.</div>
+      </div>
+      <div class="card" style="border-color:rgba(144,205,244,.25)">
+        <div class="ico">🤲</div>
+        <div class="ct" style="color:#90cdf4">Manos y muñecas</div>
+        <div class="cb">Estira el brazo con la palma hacia afuera y jala los dedos suavemente. Realiza círculos con las muñecas en ambas direcciones.</div>
+      </div>
+      <div class="card" style="border-color:rgba(144,205,244,.25)">
+        <div class="ico">🦵</div>
+        <div class="ct" style="color:#90cdf4">Piernas y pies</div>
+        <div class="cb">Levántate y ponte de puntillas 5 s, luego baja apoyando los talones. Eleva las rodillas al pecho alternadamente o da pasos en el lugar.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 23 — RESPONSABILIDADES
+══════════════════════════════ -->
+<div class="slide" id="s23">
+  <div class="w">
+    <div class="tag" style="background:rgba(246,224,94,.12);color:#faf089;border:1px solid rgba(246,224,94,.2)">Deberes</div>
+    <h2 class="title" style="color:#fff">Responsabilidades del <span style="color:#faf089">Trabajador</span></h2>
+    <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:1rem;letter-spacing:1px;text-transform:uppercase">Frente a la Seguridad y Salud en el Trabajo</p>
+    <div class="grid2">
+      <div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">1</div>
+          <div class="step-txt"><strong>Conocer y cumplir las normas SST</strong> vigentes en su país y las políticas internas de Voccare.</div>
+        </div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">2</div>
+          <div class="step-txt"><strong>Reportar condiciones inseguras</strong> y accidentes e incidentes oportunamente.</div>
+        </div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">3</div>
+          <div class="step-txt"><strong>Usar correctamente los EPP</strong> asignados para cada tarea o actividad.</div>
+        </div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">4</div>
+          <div class="step-txt"><strong>Participar en capacitaciones</strong> y actividades del Sistema de Gestión SST.</div>
+        </div>
+      </div>
+      <div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">5</div>
+          <div class="step-txt"><strong>No trabajar bajo efectos</strong> de alcohol, drogas u otras sustancias psicoactivas.</div>
+        </div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">6</div>
+          <div class="step-txt"><strong>Mantener el orden y la limpieza</strong> en su puesto de trabajo.</div>
+        </div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">7</div>
+          <div class="step-txt"><strong>Cooperar con el empleador</strong> en las inspecciones de seguridad y auditorías.</div>
+        </div>
+        <div class="step">
+          <div class="step-n" style="background:rgba(250,240,137,.2);color:#faf089">8</div>
+          <div class="step-txt"><strong>Asistir a exámenes médicos</strong> ocupacionales en los tiempos establecidos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 24 — PLAN DE EMERGENCIAS
+══════════════════════════════ -->
+<div class="slide" id="s24">
+  <div class="w col2">
+    <div>
+      <div class="tag" style="background:rgba(252,129,74,.15);color:#fc8150;border:1px solid rgba(252,129,74,.2)">Emergencias</div>
+      <span style="font-size:clamp(3rem,8vw,5rem);display:block;margin-bottom:.5rem">🚒</span>
+      <h2 class="title" style="color:#fff">¿Qué es un Plan de <span style="color:#fc8150">Emergencias?</span></h2>
+      <p class="body" style="color:rgba(255,255,255,.85)">
+        Conjunto de acciones y procedimientos diseñados para responder a situaciones de crisis o desastres, como incendios, terremotos o inundaciones.
+      </p>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px;border-color:rgba(252,129,74,.3)">
+        <div class="ico">🎯</div>
+        <div class="ct" style="color:#fc8150">Proteger vidas</div>
+        <div class="cb">Garantizar la seguridad de todo el personal, visitantes y contratistas.</div>
+      </div>
+      <div class="card" style="margin-bottom:12px;border-color:rgba(252,129,74,.3)">
+        <div class="ico">🏗️</div>
+        <div class="ct" style="color:#fc8150">Minimizar daños</div>
+        <div class="cb">Reducir el impacto sobre la infraestructura y los activos.</div>
+      </div>
+      <div class="card" style="border-color:rgba(252,129,74,.3)">
+        <div class="ico">⏱️</div>
+        <div class="ct" style="color:#fc8150">Restablecer la normalidad</div>
+        <div class="cb">Volver a la operación normal en el menor tiempo posible.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 25 — CREAR PLAN I
+══════════════════════════════ -->
+<div class="slide" id="s25">
+  <div class="w">
+    <div class="tag" style="background:rgba(237,137,54,.15);color:#f6ad55;border:1px solid rgba(237,137,54,.2)">Emergencias</div>
+    <h2 class="title" style="color:#fff">Cómo crear un Plan de Emergencia <span style="color:#f6ad55">· Pasos 1–3</span></h2>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:.5rem">
+      <div class="step">
+        <div class="step-n" style="background:rgba(246,173,85,.2);color:#f6ad55;min-width:42px;height:42px">1</div>
+        <div class="step-txt">
+          <strong>Identificar riesgos</strong>
+          Recorre el lugar y detecta posibles emergencias: incendios, sismos, inundaciones. Considera la ubicación geográfica y el entorno de cada sede.
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:rgba(246,173,85,.2);color:#f6ad55;min-width:42px;height:42px">2</div>
+        <div class="step-txt">
+          <strong>Establecer objetivos</strong>
+          Prioriza la seguridad de las personas, minimiza daños a la propiedad y establece un plan de comunicación claro para cada escenario.
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:rgba(246,173,85,.2);color:#f6ad55;min-width:42px;height:42px">3</div>
+        <div class="step-txt">
+          <strong>Definir roles</strong>
+          Asigna tareas específicas: responsable de evacuación, primeros auxilios, comunicación con autoridades. Asegúrate de que todos conozcan sus responsabilidades.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 26 — CREAR PLAN II
+══════════════════════════════ -->
+<div class="slide" id="s26">
+  <div class="w">
+    <div class="tag" style="background:rgba(237,137,54,.15);color:#f6ad55;border:1px solid rgba(237,137,54,.2)">Emergencias</div>
+    <h2 class="title" style="color:#fff">Cómo crear un Plan de Emergencia <span style="color:#f6ad55">· Pasos 4–5</span></h2>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:.5rem">
+      <div class="step">
+        <div class="step-n" style="background:rgba(246,173,85,.2);color:#f6ad55;min-width:42px;height:42px">4</div>
+        <div class="step-txt">
+          <strong>Crear procedimientos</strong>
+          Define rutas de escape y puntos de reunión. Establece sistema de alerta. Ten un kit de primeros auxilios. Para incendios: usa extintores adecuados y evacúa inmediatamente. Número de emergencia: 911.
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:rgba(246,173,85,.2);color:#f6ad55;min-width:42px;height:42px">5</div>
+        <div class="step-txt">
+          <strong>Capacitar y practicar</strong>
+          Realiza simulacros periódicos. Asegúrate de que todos conozcan los puntos seguros. Actualiza al personal ante cualquier modificación del plan.
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1.2rem;border-color:rgba(246,173,85,.3);background:rgba(246,173,85,.07)">
+      <div class="cb" style="font-size:.9rem">
+        ✅ Un plan bien practicado es la diferencia entre el caos y una evacuación ordenada. <strong style="color:#f6ad55">Practicar salva vidas.</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  SLIDE 27 — RUTAS DE EVACUACIÓN
+══════════════════════════════ -->
+<div class="slide" id="s27">
+  <div class="w center">
+    <div class="tag" style="background:rgba(99,179,237,.15);color:#90cdf4;border:1px solid rgba(99,179,237,.2)">Emergencias</div>
+    <div style="font-size:clamp(2.5rem,6vw,4rem);margin-bottom:.5rem">🗺️</div>
+    <h2 class="title" style="color:#fff">Rutas de <span style="color:#90cdf4">Evacuación</span></h2>
+    <p class="body" style="color:rgba(255,255,255,.7);max-width:600px;margin:0 auto 2rem">
+      Las rutas de evacuación específicas para cada sede están disponibles en el archivo PDF adjunto de esta capacitación.
+    </p>
+    <div class="grid2" style="max-width:680px;margin:0 auto">
+      <div class="card center" style="border-color:rgba(144,205,244,.25)"><div class="ico">🇨🇴</div><div class="ct" style="color:#90cdf4">Colombia</div><div class="cb">Sede principal</div></div>
+      <div class="card center" style="border-color:rgba(144,205,244,.25)"><div class="ico">🇲🇽</div><div class="ct" style="color:#90cdf4">México</div><div class="cb">Sede principal</div></div>
+      <div class="card center" style="border-color:rgba(144,205,244,.25)"><div class="ico">🇬🇹</div><div class="ct" style="color:#90cdf4">Guatemala</div><div class="cb">Sede principal</div></div>
+      <div class="card center" style="border-color:rgba(144,205,244,.25)"><div class="ico">🇦🇷</div><div class="ct" style="color:#90cdf4">Argentina</div><div class="cb">Pisos 5, 6 y 11</div></div>
+    </div>
+    <p style="margin-top:2rem;font-size:.8rem;color:rgba(255,255,255,.3)">
+      Consulta el PDF de SST para ver los planos detallados de cada sede →
+      <a href="Seguridad y salud en el trabajo.pdf" target="_blank" style="color:#90cdf4;text-decoration:none">Abrir PDF</a>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  NAVIGATION
+══════════════════════════════ -->
+<div class="nav">
+  <button class="nbtn" id="prevBtn" onclick="go(-1)">&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <button class="nbtn" id="nextBtn" onclick="go(1)">&#8594;</button>
+</div>
+<span class="ctr-txt" id="ctrTxt"></span>
+
+<script>
+const SLIDES = document.querySelectorAll('.slide');
+const N = SLIDES.length;
+
+const SECTIONS = [
+  'Portada','Índice',
+  'Política','Política','Política','Política','Política','Política',
+  'Fundamentos','Fundamentos','Fundamentos','Fundamentos',
+  'Riesgos','Riesgos','Riesgos','Riesgos','Riesgos','Riesgos','Riesgos',
+  'Prevención','Prevención','Prevención',
+  'Responsabilidades',
+  'Emergencias','Emergencias','Emergencias','Emergencias'
+];
+
+let cur = 0;
+
+// Build dots
+const dotsEl = document.getElementById('dots');
+for(let i=0;i<N;i++){
+  const d=document.createElement('button');
+  d.className='dot';
+  d.onclick=()=>goTo(i);
+  d.setAttribute('aria-label','Slide '+(i+1));
+  dotsEl.appendChild(d);
+}
+
+function goTo(n){
+  SLIDES[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(N-1, n));
+  SLIDES[cur].classList.add('active');
+  update();
+}
+function go(d){ goTo(cur+d); }
+
+function update(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  document.getElementById('prevBtn').disabled = cur===0;
+  document.getElementById('nextBtn').disabled = cur===N-1;
+  document.getElementById('slideNum').textContent = (cur+1)+' / '+N;
+  document.getElementById('sectionLbl').textContent = SECTIONS[cur]||'';
+  document.getElementById('ctrTxt').textContent = (cur+1)+' / '+N;
+  document.getElementById('progress').style.width = ((cur+1)/N*100)+'%';
+}
+
+update();
+
+// Keyboard
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown') { e.preventDefault(); go(1); }
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp') { e.preventDefault(); go(-1); }
+  else if(e.key==='f'||e.key==='F') toggleFS();
+  else if(e.key==='Escape' && document.fullscreenElement) document.exitFullscreen();
+  else if(e.key==='Home') goTo(0);
+  else if(e.key==='End') goTo(N-1);
+});
+
+// Touch / swipe
+let tx=0;
+document.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e=>{
+  const dx = e.changedTouches[0].clientX - tx;
+  if(Math.abs(dx)>50) go(dx<0?1:-1);
+}, {passive:true});
+
+// Fullscreen
+const fsBtn = document.getElementById('fsBtn');
+function toggleFS(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+    fsBtn.textContent='⛶ Salir pantalla completa';
+  } else {
+    document.exitFullscreen();
+    fsBtn.textContent='⛶ Pantalla completa';
+  }
+}
+fsBtn.addEventListener('click', toggleFS);
+document.addEventListener('fullscreenchange',()=>{
+  fsBtn.textContent = document.fullscreenElement ? '⛶ Salir pantalla completa' : '⛶ Pantalla completa';
+});
+</script>
+</body>
+</html>
