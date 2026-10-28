@@ -12,11 +12,11 @@
    TOKENS
 ───────────────────────────────────────── */
 :root{
-  --bg:#EDE8DF;
-  --bg-alt:#E5DFD5;
-  --ink:#1A1614;
-  --ink-dim:rgba(26,22,20,.42);
-  --ink-faint:rgba(26,22,20,.09);
+  --bg:#D9D2C5;
+  --bg-alt:#D0C9BB;
+  --ink:#0A0806;
+  --ink-dim:rgba(10,8,6,.55);
+  --ink-faint:rgba(10,8,6,.12);
   --yellow:#F5C212;
   --yellow-dk:#8C6800;
   --yellow-dim:rgba(245,194,18,.2);
@@ -33,7 +33,7 @@
    BASE
 ───────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;font-weight:300}
+html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;font-weight:400}
 
 /* Film grain */
 body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.04;
@@ -78,7 +78,7 @@ background-size:250px 250px}
 .subhead{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(1.2rem,2.2vw,1.75rem);line-height:1.15;text-transform:uppercase;letter-spacing:.02em}
 .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-dim)}
 .eyebrow.y{color:var(--yellow-dk)}
-.body{font-size:clamp(.85rem,1.5vw,1.05rem);line-height:1.75;font-weight:300;color:rgba(26,22,20,.82)}
+.body{font-size:clamp(.85rem,1.5vw,1.05rem);line-height:1.75;font-weight:400;color:var(--ink)}
 .body b,.body strong{font-weight:600;color:var(--ink)}
 .caption{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:.08em;color:var(--ink-dim)}
 
@@ -113,7 +113,7 @@ background-size:250px 250px}
 .card{background:rgba(26,22,20,.05);border:1px solid rgba(26,22,20,.1);border-radius:6px;padding:16px 18px}
 .card-accent{border-left:2px solid var(--yellow)}
 .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
-.card-body{font-size:.82rem;line-height:1.6;color:rgba(26,22,20,.62);font-weight:300}
+.card-body{font-size:.82rem;line-height:1.6;color:rgba(10,8,6,.72);font-weight:400}
 
 /* Bordered stat */
 .stat-box{border:1px solid rgba(26,22,20,.12);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:6px}
@@ -122,19 +122,19 @@ background-size:250px 250px}
 
 /* List */
 .lst{list-style:none;padding:0;display:flex;flex-direction:column;gap:2px}
-.lst li{display:flex;gap:12px;align-items:flex-start;padding:.5rem 0;font-size:clamp(.83rem,1.4vw,1rem);line-height:1.6;font-weight:300;color:rgba(26,22,20,.78);border-bottom:1px solid rgba(240,236,228,.05)}
+.lst li{display:flex;gap:12px;align-items:flex-start;padding:.5rem 0;font-size:clamp(.83rem,1.4vw,1rem);line-height:1.6;font-weight:400;color:var(--ink);border-bottom:1px solid rgba(10,8,6,.1)}
 .lst li:last-child{border-bottom:none}
 .lst li .dot-mark{display:block;width:5px;height:5px;border-radius:50%;margin-top:.55em;flex-shrink:0}
 
 /* Step */
 .step{display:flex;gap:18px;align-items:flex-start;padding:.6rem 0}
 .step-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;line-height:1;min-width:28px;opacity:.5;flex-shrink:0;padding-top:2px}
-.step-txt{font-size:clamp(.83rem,1.4vw,1rem);line-height:1.65;font-weight:300}
+.step-txt{font-size:clamp(.83rem,1.4vw,1rem);line-height:1.65;font-weight:400}
 .step-txt strong{font-weight:600;display:block;font-size:.92em;margin-bottom:2px}
 
 /* Quote */
 .pullquote{border-left:3px solid var(--yellow);padding:4px 0 4px 22px}
-.pullquote p{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(.95rem,1.8vw,1.2rem);line-height:1.8;font-style:italic;color:rgba(26,22,20,.85)}
+.pullquote p{font-family:'Barlow',sans-serif;font-weight:400;font-size:clamp(.95rem,1.8vw,1.2rem);line-height:1.8;font-style:italic;color:var(--ink)}
 
 /* Country badge */
 .country{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid rgba(26,22,20,.1);border-radius:6px}
@@ -147,20 +147,20 @@ background-size:250px 250px}
 .risk-icon-bg{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* Slide bg tints */
-#s1{background:#EDE8DF}
-#s2{background:#E8E2D9}
-#s3,#s4,#s5,#s6,#s7,#s8{background:#ECE7DD}
-#s9,#s10,#s11,#s12{background:#EAE5DC}
-#s13{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(184,74,8,.08) 0%,transparent 70%),#ECE7DE}
-#s14{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(122,40,192,.08) 0%,transparent 70%),#ECE7DE}
-#s15{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(21,122,60,.08) 0%,transparent 70%),#ECE7DE}
-#s16{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(16,96,168,.08) 0%,transparent 70%),#ECE7DE}
-#s17{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(184,32,96,.08) 0%,transparent 70%),#ECE7DE}
-#s18{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(156,100,0,.08) 0%,transparent 70%),#ECE7DE}
-#s19{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(196,39,26,.08) 0%,transparent 70%),#ECE7DE}
-#s20,#s21,#s22,#s23{background:#EBE6DC}
-#s24,#s25,#s26{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(196,39,26,.07) 0%,transparent 70%),#EDE8DF}
-#s27{background:#EAE5DC}
+#s1{background:#D9D2C5}
+#s2{background:#D4CDC0}
+#s3,#s4,#s5,#s6,#s7,#s8{background:#D7D0C3}
+#s9,#s10,#s11,#s12{background:#D6CFC2}
+#s13{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(184,74,8,.1) 0%,transparent 70%),#D7D0C3}
+#s14{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(122,40,192,.1) 0%,transparent 70%),#D7D0C3}
+#s15{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(21,122,60,.1) 0%,transparent 70%),#D7D0C3}
+#s16{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(16,96,168,.1) 0%,transparent 70%),#D7D0C3}
+#s17{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(184,32,96,.1) 0%,transparent 70%),#D7D0C3}
+#s18{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(156,100,0,.1) 0%,transparent 70%),#D7D0C3}
+#s19{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(196,39,26,.1) 0%,transparent 70%),#D7D0C3}
+#s20,#s21,#s22,#s23{background:#D6CFC2}
+#s24,#s25,#s26{background:radial-gradient(ellipse 70% 60% at 85% 50%,rgba(196,39,26,.1) 0%,transparent 70%),#D9D2C5}
+#s27{background:#D6CFC2}
 </style>
 </head>
 <body>
